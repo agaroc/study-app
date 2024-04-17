@@ -57,7 +57,7 @@ const App = () => {
         let options = null;
         if (selectedTestType === "mcq") {
           const trimmedOptionsPart = optionsPart.trim();
-          options = trimmedOptionsPart.split(/\s(?=[a-dA-D]\.)/).map(option => option.trim());
+          options = trimmedOptionsPart.split(/\s(?=[a-dA-D]\.|[a-dA-D]\))/).map(option => option.trim());
           return { question, options, answer: answer.trim(), explanation: explanation.trim() };
 
         }
