@@ -1,0 +1,28 @@
+.frq-box {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+  }
+  
+  .frq-question {
+    padding: 10px;
+    font-weight: bold;
+  }
+  
+  .frq-answer {
+    
+    width: 80%;
+    height: 100px;
+    margin-top: 10px;
+    margin-left: 10px;
+    border: none;
+    border-top: 1px solid #ddd;
+    resize: vertical;
+  }
+  .correct-answer {
+    margin-bottom: 10px;
+  }
+  
+  .explanation {
+    margin-top: 10px; 
+  }

@@ -1,0 +1,22 @@
+.mcq-box {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+  }
+  
+  .mcq-question {
+    padding: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  .mcq-option {
+    padding: 5px 10px;
+  }
+  .correct-answer {
+    margin-bottom: 10px; 
+  }
+  
+  .explanation {
+    margin-top: 10px; 
+  }
