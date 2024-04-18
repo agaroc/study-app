@@ -14,6 +14,7 @@ const App = () => {
   const [selectedTestType, setSelectedTestType] = useState(''); 
   const [showCheckButton, setShowCheckButton] = useState(false);
   const [checkedTest, setCheckedTest] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleTestTypeChange = (e) => {
       setSelectedTestType(e.target.value);
@@ -23,6 +24,7 @@ const App = () => {
 
   const generateTest = async () => {
     try {
+      setIsLoading(true); 
       setTest(false);
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -34,7 +36,7 @@ const App = () => {
         messages: [
           {
             role: 'system',
-            content: `Generate ${numQ} ${selectedTestType} questions on ${topic}. Add the answer for each question after "Answer" and the explanation after "Explanation".  Also if it is a multiple choice question list them with a period. Seperate each question using ~ before the number of the quesiton.`
+            content: `Generate ${numQ} ${selectedTestType} questions on ${topic}. Add the answer for each question after "Answer" with just the letter and the explanation after "Explanation".  Also if it is a multiple choice question list them with a period. Seperate each question using ~ before the number of the quesiton.`
           }
         ],
         max_tokens: 150 * parseInt(numQ),
@@ -43,16 +45,20 @@ const App = () => {
       });
       const data = await response.json();   
       const generatedContent = data.choices[0].message.content;
-      console.log("G: "+ generatedContent);
+      //console.log("G: "+ generatedContent);
       const indivQs = generatedContent.split('~').slice(1);
-      console.log("I: "+ indivQs);
+      //console.log("I: "+ indivQs);
       const questionsAndAnswers = indivQs.map(choice => {
-        console.log("C:" +choice);
+       // console.log("C:" +choice);
         let [questionPart, answerAndExplanationPart] = choice.split('Answer:');
         const [question, optionsPart] = questionPart.split('?');
         let [answer, explanation] = answerAndExplanationPart.split('Explanation:');
-
-      
+        // console.log("qp: "+ questionPart);
+        // console.log("ae: "+ answerAndExplanationPart);
+        // console.log("Question:", question);
+        // console.log("Options Part:", optionsPart);
+        // console.log("Answer:", answer);
+        // console.log("Explanation:", explanation);
 
         let options = null;
         if (selectedTestType === "mcq") {
@@ -69,6 +75,8 @@ const App = () => {
       setShowCheckButton(true);
     } catch (error) {
       console.error('Error generating test:', error);
+    } finally {
+      setIsLoading(false); 
     }
   };
 
@@ -89,8 +97,9 @@ const App = () => {
   return (
     <div className="app">
       <div className="main-section">
+        {isLoading && <div className="loading-spinner">Loading...</div>} {/* Loading spinner */}
         {test && <TestQuestions testType={selectedTestType} questionsAndAnswers={questionsAndAnswers} checkedTest={checkedTest} />}
-        {!test && <div className="empty-test">Please Generate a Test</div>}
+        {!test && !isLoading && <div className="empty-test">Please Generate a Test</div>}
         {showCheckButton && <button onClick={handleCheckTest} className="check-test-button">Check Test</button>}
 
       </div>
