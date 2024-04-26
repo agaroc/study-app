@@ -19,10 +19,19 @@
 .sidebar {
   width: 300px;
   padding: 20px;
+  margin-bottom: 40px;
 }
 
 .input-field {
   width: 90%;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input-select-field{
+  width: 97%;
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #ccc;
@@ -62,3 +71,14 @@
 .generate-button:hover {
   background-color: #0056b3;
 }
+
+.title {
+  margin-left: 35px;
+}
+
+.loading-spinner{
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+

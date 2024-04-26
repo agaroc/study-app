@@ -5,6 +5,8 @@ CS 4990
 import React, { useState } from 'react';
 import './App.css'; 
 import TestQuestions from './TestQuestions';
+import BeatLoader from "react-spinners/BeatLoader";
+
 
 const App = () => {
   const [test, setTest] = useState(false);
@@ -26,6 +28,17 @@ const App = () => {
     try {
       setIsLoading(true); 
       setTest(false);
+      let prompt = '';
+      if(selectedTestType === "mcq")
+      {
+        console.log("mcq");
+        prompt = `Generate ${numQ} multiple choice questions on ${topic}. Add the answer for each question after "Answer" and if it is mcq answer with just the letter and make each option start with a &. Add the explanation after "Explanation". . Make each question start with ~.`
+      }
+      else
+      {
+        console.log("Frq");
+        prompt = `Generate ${numQ} free response questions on ${topic}. Add the answer for each question after "Answer" and add the explanation after "Explanation".  Make each question start with ~.`
+      }
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -36,7 +49,7 @@ const App = () => {
         messages: [
           {
             role: 'system',
-            content: `Generate ${numQ} ${selectedTestType} questions on ${topic}. Add the answer for each question after "Answer" with just the letter and the explanation after "Explanation".  Also if it is a multiple choice question list them with a period. Seperate each question using ~ before the number of the quesiton.`
+            content: prompt
           }
         ],
         max_tokens: 150 * parseInt(numQ),
@@ -49,7 +62,7 @@ const App = () => {
       const indivQs = generatedContent.split('~').slice(1);
       //console.log("I: "+ indivQs);
       const questionsAndAnswers = indivQs.map(choice => {
-       // console.log("C:" +choice);
+      //console.log("C:" +choice);
         let [questionPart, answerAndExplanationPart] = choice.split('Answer:');
         const [question, optionsPart] = questionPart.split('?');
         let [answer, explanation] = answerAndExplanationPart.split('Explanation:');
@@ -63,7 +76,7 @@ const App = () => {
         let options = null;
         if (selectedTestType === "mcq") {
           const trimmedOptionsPart = optionsPart.trim();
-          options = trimmedOptionsPart.split(/\s(?=[a-dA-D]\.|[a-dA-D]\))/).map(option => option.trim());
+          options = trimmedOptionsPart.split("&").map(option => option.trim());
           return { question, options, answer: answer.trim(), explanation: explanation.trim() };
 
         }
@@ -97,24 +110,29 @@ const App = () => {
   return (
     <div className="app">
       <div className="main-section">
-        {isLoading && <div className="loading-spinner">Loading...</div>} {/* Loading spinner */}
+        <div className="loading-spinner"> 
+          {isLoading ? <p style={{marginTop: '10px', marginRight:'10px'}}>Loading</p>:''}
+          <BeatLoader size={10}color={"#0056b3"} loading={isLoading} />
+        </div>
         {test && <TestQuestions testType={selectedTestType} questionsAndAnswers={questionsAndAnswers} checkedTest={checkedTest} />}
         {!test && !isLoading && <div className="empty-test">Please Generate a Test</div>}
         {showCheckButton && <button onClick={handleCheckTest} className="check-test-button">Check Test</button>}
-
       </div>
       <div className="sidebar">
+        <h1 className="title">Test Generator</h1>
         <input
           type="text"
           placeholder="Topic"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           className="input-field"
+          disabled={test}
         />
        <select
           value={selectedTestType}
           onChange= {handleTestTypeChange}
-          className="input-field"
+          className="input-select-field"
+          disabled={test}
         >
           <option value="none">Select a Test Type</option>
           <option value="mcq">Multiple Choice Questions</option>
@@ -126,6 +144,7 @@ const App = () => {
            value={numQ}
            onChange={(e) => setNumQ(e.target.value)}
            className="input-field"
+           disabled={test}
         />
         {test ? (
           <button onClick={handleResetTest} className="reset-test-button">Reset Test</button>

@@ -3,6 +3,7 @@ import './FRQBox.css';
 
 
 const FRQBox = ({ question, answer, explain, check }) => {
+  console.log(answer);
   return (
     <div className="frq-box">
       <div className="frq-question">{question}</div>
