@@ -38,7 +38,7 @@ const MCQBox = ({ question, options, answer, explain, check }) => {
           console.log("AI: "+ansIndex)
           console.log("index: "+index)
           return (
-            <div key={index} className={check && index === ansIndex ? 'correct-answer' : ''}>   {/* Checking answer if it is apply new style to make it green */}
+            <div key={index} className={check && index === ansIndex ? 'correct-answer' : ''}>   {/* Marking the correct answer*/}
               <input type="radio" name={question} value={option} disabled={check} />
               <label>{option}</label>
             </div>
