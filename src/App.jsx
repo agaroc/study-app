@@ -5,51 +5,48 @@ CS 4990
 import React, { useState } from 'react';
 import './App.css'; 
 import TestQuestions from './TestQuestions';
-import BeatLoader from "react-spinners/BeatLoader";
+import BeatLoader from "react-spinners/BeatLoader";   //import animation for loader
 
 
 const App = () => {
   const [test, setTest] = useState(false);
   const [topic, setTopic] = useState('');
   const [numQ, setNumQ] = useState('');
-  const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);
+  const [questionsAndAnswers, setQuestionsAndAnswers] = useState([]);   //all states needed and variables for the app
   const [selectedTestType, setSelectedTestType] = useState(''); 
   const [showCheckButton, setShowCheckButton] = useState(false);
   const [checkedTest, setCheckedTest] = useState(false); 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTestTypeChange = (e) => {
-      setSelectedTestType(e.target.value);
-    
+      setSelectedTestType(e.target.value);      //select the test type
   };
 
 
   const generateTest = async () => {
     try {
-      setIsLoading(true); 
-      setTest(false);
+      setIsLoading(true);     //start loading animation
+      setTest(false);     //no test yet
       let prompt = '';
       if(selectedTestType === "mcq")
-      {
-        console.log("mcq");
+      {   //prompt if it is MCQ
         prompt = `Generate ${numQ} multiple choice questions on ${topic}. Add the answer for each question after "Answer" and if it is mcq answer with just the letter and make each option start with a &. Add the explanation after "Explanation". . Make each question start with ~.`
       }
       else
-      {
-        console.log("Frq");
+      { //prompt if it is a FRQ
         prompt = `Generate ${numQ} free response questions on ${topic}. Add the answer for each question after "Answer" and add the explanation after "Explanation".  Make each question start with ~.`
       }
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {    //fetch the Openai API
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`
+          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`   //API Authorization
         },
         body: JSON.stringify({
         messages: [
           {
-            role: 'system',
-            content: prompt
+            role: 'system',   //role is system
+            content: prompt 
           }
         ],
         max_tokens: 150 * parseInt(numQ),
@@ -58,20 +55,11 @@ const App = () => {
       });
       const data = await response.json();   
       const generatedContent = data.choices[0].message.content;
-      //console.log("G: "+ generatedContent);
-      const indivQs = generatedContent.split('~').slice(1);
-      //console.log("I: "+ indivQs);
-      const questionsAndAnswers = indivQs.map(choice => {
-      //console.log("C:" +choice);
+      const indivQs = generatedContent.split('~').slice(1);       //splitting the questions by ~ as the question are generating with a ~ infront
+      const questionsAndAnswers = indivQs.map(choice => {               
         let [questionPart, answerAndExplanationPart] = choice.split('Answer:');
-        const [question, optionsPart] = questionPart.split('?');
+        const [question, optionsPart] = questionPart.split('?');                  //splitting the answer, explaination, options, and question for each question
         let [answer, explanation] = answerAndExplanationPart.split('Explanation:');
-        // console.log("qp: "+ questionPart);
-        // console.log("ae: "+ answerAndExplanationPart);
-        // console.log("Question:", question);
-        // console.log("Options Part:", optionsPart);
-        // console.log("Answer:", answer);
-        // console.log("Explanation:", explanation);
 
         let options = null;
         if (selectedTestType === "mcq") {
@@ -83,13 +71,13 @@ const App = () => {
         return { question, options, answer: answer.trim(), explanation: explanation.trim() };
       });
 
-      setQuestionsAndAnswers(questionsAndAnswers);
+      setQuestionsAndAnswers(questionsAndAnswers);    //showing the test
       setTest(true);
-      setShowCheckButton(true);
+      setShowCheckButton(true);   //allow user to use the check test button
     } catch (error) {
-      console.error('Error generating test:', error);
+        console.error('Error generating test:', error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false); //loading is done
     }
   };
 
@@ -101,7 +89,7 @@ const App = () => {
     setTest(false);
     setTopic('');
     setNumQ('');
-    setQuestionsAndAnswers([]);
+    setQuestionsAndAnswers([]);   //set everything back to the original state
     setSelectedTestType('');
     setShowCheckButton(false);
     setCheckedTest(false);
@@ -110,7 +98,7 @@ const App = () => {
   return (
     <div className="app">
       <div className="main-section">
-        <div className="loading-spinner"> 
+        <div className="loading-spinner">   {/* Area that either shows no test or the test*/}
           {isLoading ? <p style={{marginTop: '10px', marginRight:'10px'}}>Loading</p>:''}
           <BeatLoader size={10}color={"#0056b3"} loading={isLoading} />
         </div>
@@ -118,7 +106,7 @@ const App = () => {
         {!test && !isLoading && <div className="empty-test">Please Generate a Test</div>}
         {showCheckButton && <button onClick={handleCheckTest} className="check-test-button">Check Test</button>}
       </div>
-      <div className="sidebar">
+      <div className="sidebar">    {/* Area for selecting test type, number of questions, and topic*/ }
         <h1 className="title">Test Generator</h1>
         <input
           type="text"

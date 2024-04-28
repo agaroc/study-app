@@ -1,7 +1,11 @@
+/*
+Caleb Ng
+Logic for FRQ answer
+*/
 import React from 'react';
 import './FRQBox.css';
 
-
+//similar to MCQBox
 const FRQBox = ({ question, answer, explain, check }) => {
   console.log(answer);
   return (

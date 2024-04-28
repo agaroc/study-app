@@ -1,3 +1,6 @@
+/*Caleb Ng 
+Component for handling the type of question and displaying it
+*/
 import React from 'react';
 import FRQBox from './FRQBox';
 import MCQBox from './MCQBox';

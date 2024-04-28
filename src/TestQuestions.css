@@ -1,4 +1,4 @@
 .test-questions {
-    max-height: 700px; /* Set the maximum height of the container */
-    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 700px; 
+    overflow-y: auto; 
   }

@@ -1,18 +1,20 @@
+/*
+Caleb Ng
+Logic for multiple question box
+*/
 import React from 'react';
 import './MCQBox.css';
 
 
 const MCQBox = ({ question, options, answer, explain, check }) => {
-  const options2 = options.slice(1);
-  const ansIndex = letterToNumer(answer[0].trim()[0]);
-  const letter = answer[0].trim()[0];
-  console.log("Letter: " + letter)
+  const options2 = options.slice(1);    //gets rid of the empty space
+  const ansIndex = letterToNumer(answer[0].trim()[0]);    //get only the letter of the answer
   function letterToNumer( letter){
     switch(letter)
     {
       case "A":
       case "a":
-        return 0;
+        return 0;   //function to translate letter to index number
       case "B":
       case "b":
         return 1;
@@ -36,7 +38,7 @@ const MCQBox = ({ question, options, answer, explain, check }) => {
           console.log("AI: "+ansIndex)
           console.log("index: "+index)
           return (
-            <div key={index} className={check && index === ansIndex ? 'correct-answer' : ''}>
+            <div key={index} className={check && index === ansIndex ? 'correct-answer' : ''}>   {/* Checking answer if it is apply new style to make it green */}
               <input type="radio" name={question} value={option} disabled={check} />
               <label>{option}</label>
             </div>
