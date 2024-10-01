@@ -27,49 +27,31 @@ const App = () => {
     try {
       setIsLoading(true);     //start loading animation
       setTest(false);     //no test yet
-      let prompt = '';
-      if(selectedTestType === "mcq")
-      {   //prompt if it is MCQ
-        prompt = `Generate ${numQ} multiple choice questions on ${topic}. Add the answer for each question after "Answer" and if it is mcq answer with just the letter and make each option start with a &. Add the explanation after "Explanation". . Make each question start with ~.`
-      }
-      else
-      { //prompt if it is a FRQ
-        prompt = `Generate ${numQ} free response questions on ${topic}. Add the answer for each question after "Answer" and add the explanation after "Explanation".  Make each question start with ~.`
-      }
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {    //fetch the Openai API
+      const requestBody = {
+        numQ,
+        topic,
+        selectedTestType,
+      };
+  
+      const response = await fetch('/.netlify/functions/generatequiz', { // Call the serverless function
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`   //API Authorization
         },
-        body: JSON.stringify({
-        messages: [
-          {
-            role: 'system',   //role is system
-            content: prompt 
-          }
-        ],
-        max_tokens: 150 * parseInt(numQ),
-        model: "gpt-3.5-turbo"
-      })
+        body: JSON.stringify(requestBody),
       });
-      const data = await response.json();   
-      const generatedContent = data.choices[0].message.content;
-      const indivQs = generatedContent.split('~').slice(1);       //splitting the questions by ~ as the question are generating with a ~ infront
-      const questionsAndAnswers = indivQs.map(choice => {               
-        let [questionPart, answerAndExplanationPart] = choice.split('Answer:');
-        const [question, optionsPart] = questionPart.split('?');                  //splitting the answer, explaination, options, and question for each question
-        let [answer, explanation] = answerAndExplanationPart.split('Explanation:');
+  
+      const data = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate quiz');
+      }
+      console.log("data: " + data);
 
-        let options = null;
-        if (selectedTestType === "mcq") {
-          const trimmedOptionsPart = optionsPart.trim();
-          options = trimmedOptionsPart.split("&").map(option => option.trim());
-          return { question, options, answer: answer.trim(), explanation: explanation.trim() };
+  
+      const { questionsAndAnswers } = data;
 
-        }
-        return { question, options, answer: answer.trim(), explanation: explanation.trim() };
-      });
+      console.log(questionsAndAnswers);
 
       setQuestionsAndAnswers(questionsAndAnswers);    //showing the test
       setTest(true);

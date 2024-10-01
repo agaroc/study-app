@@ -2,8 +2,8 @@
 Component for handling the type of question and displaying it
 */
 import React from 'react';
-import FRQBox from './FRQBox';
-import MCQBox from './MCQBox';
+import FRQBox from './frq_question/FRQBox'
+import MCQBox from './mcq_question/MCQBox';
 import { useEffect } from 'react';
 import './TestQuestions.css'
 const TestQuestions = ({ testType, questionsAndAnswers, checkedTest }) => {

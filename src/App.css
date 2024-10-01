@@ -62,6 +62,7 @@ CSS styles for App.jsx
 }
 
 .check-test-button{
+  margin-top: 15px;
   width: 10%;
   padding: 10px;
   background-color: #007bff;
